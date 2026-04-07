@@ -5,7 +5,6 @@ const analyzeResume = require("../services/analyzeService");
 const Analysis = require("../models/Analysis");
 
 // Storage config
-
 const storage = multer.diskStorage({
     destination: function(req, file, cb){
         cb(null, "uploads/");
@@ -14,6 +13,7 @@ const storage = multer.diskStorage({
         cb(null, Date.now() + "-" + file.originalname);
     }
 });
+
 
 const upload = multer({storage: storage});
 
@@ -27,22 +27,81 @@ const uploadFile = async(req, res) =>{
         // Extract text
         const data = await pdfParse(dataBuffer);
 
-        const jobDescription = req.body.jobDescription;
+        let jobDescriptions = req.body.jobDescriptions;
 
-        const analysis = analyzeResume(data.text, jobDescription);
+        // if nothing sent
+        if (!jobDescriptions) {
+            return res.status(400).json({ message: "jobDescriptions required" });
+        }
 
-        const savedAnalysis = await Analysis.create({
-            resumeText : data.text,
-            jobDescription : jobDescription,
-            matchedKeywords : analysis.matchedKeywords,
-            missingKeywords : analysis.missingKeywords,
-            matchedPhrases : analysis.matchedPhrases,
-            score : analysis.score
+        // if string -> parse
+        if (typeof jobDescriptions === "string") {
+            jobDescriptions = JSON.parse(jobDescriptions);
+        }
+
+        // if single value -> convert to array
+        if (!Array.isArray(jobDescriptions)) {
+            jobDescriptions = [jobDescriptions];
+        }
+
+        const results = [];
+
+        for(const jd of jobDescriptions){
+
+            const analysis = analyzeResume(data.text, jd);
+
+            const savedAnalysis = await Analysis.create({
+                resumeText : data.text,
+                jobDescription : jd,
+                matchedKeywords : analysis.matchedKeywords,
+                missingKeywords : analysis.missingKeywords,
+                matchedPhrases : analysis.matchedPhrases,
+                score : analysis.score
+            });
+
+            results.push(savedAnalysis);
+        }
+
+        results.sort((a,b) => b.score - a.score);
+        const rankedResults = results.map((items,index) => {
+            let level = "Weak";
+
+            if(items.score >= 80){
+                level = "Strong";
+            }
+            else if(items.score >= 60){
+                level = "Medium";
+            }
+
+            return {
+                rank : index + 1,
+                matchLevel : level,
+                ...items._doc
+            };
         });
+
+        const bestMatch = rankedResults[0];
+        
+        const suggestions = [...new Set(
+            rankedResults.flatMap(item => [
+            ...(item.missingKeywords || []),
+            ...(item.missingPhrases || [])
+            ])
+        )];
+
+        let suggestionMessage = null;
+
+        if (suggestions.length > 0) {
+            suggestionMessage = "Improve your resume by adding these missing skills";
+        }
 
         res.json({
             message:"File uploaded and analyzed successfully",
-            analysis: savedAnalysis
+            count: rankedResults.length,
+            bestMatch,
+            suggestions,
+            suggestionMessage,
+            analysis: rankedResults
         });
     }
     catch(error){
