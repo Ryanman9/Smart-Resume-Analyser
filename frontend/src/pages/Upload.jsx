@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 function Upload() {
     const navigate = useNavigate();
+    const API = import.meta.env.VITE_API_URL;
 
     const [resume, setResume] = useState(null);
     const [jobDescriptions, setJobDescriptions] = useState([""]);
@@ -19,18 +20,37 @@ function Upload() {
     };
 
     const handleAnalyze = async () => {
+        console.log("Analyze clicked");
+
+        if (!resume) {
+            alert("Please upload resume");
+            return;
+        }
+
         const formData = new FormData();
         formData.append("resume", resume);
+
         formData.append("jobDescriptions", JSON.stringify(jobDescriptions));
+        
+        try{
+            const response = await fetch(`${API}/api/upload`, {
+                method : "POST",
+                body : formData,
+            });
 
-        const response = await fetch("http://localhost:5000/analyze", {
-            method : "POST",
-            body : formData,
-        });
+            if(!response.ok){
+                const text = await response.text();
+                console.error("Server error: ", text)
+                return;
+            }
 
-        const data = await response.json();
+            const data = await response.json();
 
-        navigate("/result", {state:data});
+            navigate("/result", {state:data});
+        }
+        catch(error){
+            console.error(error);
+        }
     };
 
     return (
@@ -45,13 +65,13 @@ function Upload() {
             {jobDescriptions.map((jd, index) => (
                 <div key={index}>
                 <textarea
-                placeholder={`Job Description ${index + 1}`}
-                value={jd}
-                onChange={(e) =>
-                handleJDChange(index, e.target.value)
-            }
-            />
-            </div>
+                    placeholder={`Job Description ${index + 1}`}
+                    value={jd}
+                    onChange={(e) =>
+                    handleJDChange(index, e.target.value)
+                }
+                />
+                </div>
             ))}
 
             <button onClick={addJobDescription}> Add Another JD</button>

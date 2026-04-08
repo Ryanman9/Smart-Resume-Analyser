@@ -14,6 +14,7 @@ const analysisSchema = new mongoose.Schema({
     matchedKeywords: [String],
     missingKeywords: [String],
     matchedPhrases: [String],
+    missingPhrases: [String],
     score: Number,
     }, {
         timestamps : true

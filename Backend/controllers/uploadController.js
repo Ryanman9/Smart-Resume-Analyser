@@ -56,6 +56,7 @@ const uploadFile = async(req, res) =>{
                 matchedKeywords : analysis.matchedKeywords,
                 missingKeywords : analysis.missingKeywords,
                 matchedPhrases : analysis.matchedPhrases,
+                missingPhrases : analysis.missingPhrases,
                 score : analysis.score
             });
 

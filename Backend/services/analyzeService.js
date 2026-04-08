@@ -53,7 +53,8 @@ const analyzeResume = (resumeText, jobDescription) => {
 
     // phrase matching
     let matchedPhrases = [];
-    let relevantPhrases = [];   
+    let relevantPhrases = [];
+    let missingPhrases = [];
 
     // traverse through skill phrases and for each skill...
     skillPhrases.forEach( skill => {
@@ -64,6 +65,9 @@ const analyzeResume = (resumeText, jobDescription) => {
             // if skill phrase matches to resume then we push it to the matched phrase array
             if(resume.includes(skill)){
                 matchedPhrases.push(skill);
+            }
+            else {
+            missingPhrases.push(skill);
             }
         }
     });
@@ -119,6 +123,7 @@ const analyzeResume = (resumeText, jobDescription) => {
         matchedKeywords,
         missingKeywords,
         matchedPhrases,
+        missingPhrases,
         score: finalScore.toFixed(2)
     };
 };
