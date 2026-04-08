@@ -1,64 +1,145 @@
 import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import "../styles/Result.css";
 
 function Result() {
   const location = useLocation();
+  const API = import.meta.env.VITE_API_URL;
+
+  const query = new URLSearchParams(location.search);
+  const isTop = query.get("filter") === "top";
+
+  const [topResults, setTopResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   const data = location.state;
 
-  if (!data) {
-    return <h2>No Results Found</h2>;
+  useEffect(() => {
+    if (isTop) {
+      fetchTop();
+    }
+  }, [isTop]);
+
+  const fetchTop = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API}/api/analysis/top`);
+      const data = await res.json();
+      setTopResults(data);
+    } catch (err) {
+      console.error(err);
+    }
+    setLoading(false);
+  };
+
+  /* ================= TOP MODE ================= */
+
+  if (isTop) {
+    return (
+      <div className="result-page">
+        <h1 className="result-title">Top Resume Matches</h1>
+
+        {loading && <p>Loading...</p>}
+
+        {topResults.map((item, index) => (
+          <div className="top-card" key={item._id}>
+            <h3 className="rank">Rank #{index + 1}</h3>
+
+            <p className="score">Score: {item.score}%</p>
+
+            <p>
+              {item.jobDescription.substring(0, 150)}...
+            </p>
+          </div>
+        ))}
+      </div>
+    );
   }
 
-  const results = data.analysis;
+  /* ================= NO DATA ================= */
+
+  if (!data) {
+    return (
+      <div className="result-page">
+        <h2>No Results Found</h2>
+      </div>
+    );
+  }
+
+  const results = data?.analysis || [];
+
+  /* ================= NORMAL MODE ================= */
 
   return (
-    <div>
-      <h1>Analysis Result</h1>
+    <div className="result-page">
+      <h1 className="result-title">Analysis Result</h1>
 
-      <h2>Best Match Score: {data.bestMatch?.score}%</h2>
+      {/* Best Score */}
+      <div className="best-score">
+        Best Match Score: <span>{data.bestMatch?.score}%</span>
+      </div>
 
+      {/* Suggestions */}
       {data.suggestionMessage && (
-        <>
-          <h3>{data.suggestionMessage}</h3>
-          <ul>
+        <div className="result-improve">
+          <div className="result-improve-title">
+            Improve your resume by adding:
+          </div>
+
+          <div className="result-improve-list">
             {data.suggestions?.map((s, i) => (
-              <li key={i}>{s}</li>
+              <span key={i} className="result-improve-tag">
+                {s}
+              </span>
             ))}
-          </ul>
-        </>
+          </div>
+        </div>
       )}
 
-      <hr />
-
+      {/* Results */}
       {results.map((item, index) => (
-        <div key={index}>
-          <h3>Job Description {index + 1}</h3>
+        <div className="result-card" key={index}>
+          <h3>{item.companyName}</h3>
 
-          <p>Score: {item.score}%</p>
-          <p>Match Level: {item.matchLevel}</p>
+          <p className="score">Score: {item.score}%</p>
+          <p className="match">Match Level: {item.matchLevel}</p>
           <p>Rank: {item.rank}</p>
 
-          <h4>Matched Keywords</h4>
-          <ul>
-            {item.matchedKeywords?.map((k, i) => (
-              <li key={i}>{k}</li>
-            ))}
-          </ul>
+          {/* Matched Keywords */}
+          <div className="keyword-block">
+            <h4>Matched Keywords</h4>
+            <div className="keyword-list">
+              {item.matchedKeywords?.map((k, i) => (
+                <span className="keyword" key={i}>
+                  {k}
+                </span>
+              ))}
+            </div>
+          </div>
 
-          <h4>Missing Keywords</h4>
-          <ul>
-            {item.missingKeywords?.map((k, i) => (
-              <li key={i}>{k}</li>
-            ))}
-          </ul>
+          {/* Missing Keywords */}
+          <div className="keyword-block">
+            <h4>Missing Keywords</h4>
+            <div className="keyword-list">
+              {item.missingKeywords?.map((k, i) => (
+                <span className="keyword missing" key={i}>
+                  {k}
+                </span>
+              ))}
+            </div>
+          </div>
 
-          <h4>Matched Phrases</h4>
-          <ul>
-            {item.matchedPhrases?.map((p, i) => (
-              <li key={i}>{p}</li>
-            ))}
-          </ul>
-
-          <hr />
+          {/* Matched Phrases */}
+          <div className="keyword-block">
+            <h4>Matched Phrases</h4>
+            <div className="keyword-list">
+              {item.matchedPhrases?.map((p, i) => (
+                <span className="keyword" key={i}>
+                  {p}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
       ))}
     </div>

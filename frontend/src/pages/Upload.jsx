@@ -1,27 +1,32 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "../styles/Upload.css";
 
 function Upload() {
     const navigate = useNavigate();
     const API = import.meta.env.VITE_API_URL;
 
     const [resume, setResume] = useState(null);
-    const [jobDescriptions, setJobDescriptions] = useState([""]);
+    const [fileName, setFileName] = useState("No file selected");
 
-    const handleJDChange = (index, value) => {
+    const [jobDescriptions, setJobDescriptions] = useState([
+        { company: "", jd: "" }
+    ]);
+
+    const handleJDChange = (index, field, value) => {
         const updated = [...jobDescriptions];
-        updated[index] = value;
-
+        updated[index][field] = value;
         setJobDescriptions(updated);
     };
 
     const addJobDescription = () => {
-        setJobDescriptions([...jobDescriptions, ""]);
+        setJobDescriptions([
+            ...jobDescriptions,
+            { company: "", jd: "" }
+        ]);
     };
 
     const handleAnalyze = async () => {
-        console.log("Analyze clicked");
-
         if (!resume) {
             alert("Please upload resume");
             return;
@@ -29,58 +34,90 @@ function Upload() {
 
         const formData = new FormData();
         formData.append("resume", resume);
-
         formData.append("jobDescriptions", JSON.stringify(jobDescriptions));
-        
-        try{
+
+        try {
             const response = await fetch(`${API}/api/upload`, {
-                method : "POST",
-                body : formData,
+                method: "POST",
+                body: formData,
             });
 
-            if(!response.ok){
-                const text = await response.text();
-                console.error("Server error: ", text)
-                return;
-            }
-
             const data = await response.json();
-
-            navigate("/result", {state:data});
-        }
-        catch(error){
+            navigate("/result", { state: data });
+        } catch (error) {
             console.error(error);
         }
     };
 
     return (
-        <div>
-            <h1>Upload Resume</h1>
+        <div className="upload-page">
+            <h1 className="upload-title">Upload Resume</h1>
 
-            <input type="file"
-            onChange={(e) => setResume(e.target.files[0])}/>
+            <div className="upload-card">
 
-            <h3>Job Descriptions</h3>
+                {/* File Upload */}
+                <div className="file-upload">
+                    <label className="file-label">
+                        Choose Resume
+                        <input
+                            type="file"
+                            className="file-hidden"
+                            onChange={(e) => {
+                                setResume(e.target.files[0]);
+                                setFileName(
+                                    e.target.files[0]?.name || "No file selected"
+                                );
+                            }}
+                        />
+                    </label>
 
-            {jobDescriptions.map((jd, index) => (
-                <div key={index}>
-                <textarea
-                    placeholder={`Job Description ${index + 1}`}
-                    value={jd}
-                    onChange={(e) =>
-                    handleJDChange(index, e.target.value)
-                }
-                />
+                    <span className="file-name">{fileName}</span>
                 </div>
-            ))}
 
-            <button onClick={addJobDescription}> Add Another JD</button>
+                <h3 className="jd-title">Job Descriptions</h3>
 
-            <br /><br/>
+                {jobDescriptions.map((item, index) => (
+                    <div key={index} className="jd-block">
 
-            <button onClick={handleAnalyze}>
-                Analyze
-            </button>
+                        <input
+                            className="company-input"
+                            type="text"
+                            placeholder="Company Name"
+                            value={item.company}
+                            onChange={(e) =>
+                                handleJDChange(index, "company", e.target.value)
+                            }
+                        />
+
+                        <textarea
+                            className="jd-textarea"
+                            placeholder={`Job Description ${index + 1}`}
+                            value={item.jd}
+                            onChange={(e) =>
+                                handleJDChange(index, "jd", e.target.value)
+                            }
+                        />
+
+                    </div>
+                ))}
+
+                <div className="upload-actions">
+                    <button
+                        className="btn secondary"
+                        onClick={addJobDescription}
+                    >
+                        Add Another JD
+                    </button>
+
+                    <button
+                        className="btn"
+                        onClick={handleAnalyze}
+                    >
+                        Analyze
+                    </button>
+                </div>
+
+            </div>
         </div>
     );
 }

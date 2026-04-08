@@ -46,18 +46,36 @@ const uploadFile = async(req, res) =>{
 
         const results = [];
 
-        for(const jd of jobDescriptions){
+        for (const item of jobDescriptions) {
 
-            const analysis = analyzeResume(data.text, jd);
+            const jd =
+                typeof item === "string"
+                    ? item
+                    : item.jd;
+
+            const lines = jd.split("\n");
+
+            const firstLine = lines[0];
+
+            const company =
+                typeof item === "string"
+                    ? firstLine.split(" ")[0]
+                    : item.company || firstLine.split(" ")[0];
+
+            // remove only company word
+            const cleanJD = jd.replace(company, "").trim();
+
+            const analysis = analyzeResume(data.text, cleanJD);
 
             const savedAnalysis = await Analysis.create({
-                resumeText : data.text,
-                jobDescription : jd,
-                matchedKeywords : analysis.matchedKeywords,
-                missingKeywords : analysis.missingKeywords,
-                matchedPhrases : analysis.matchedPhrases,
-                missingPhrases : analysis.missingPhrases,
-                score : analysis.score
+                resumeText: data.text,
+                jobDescription: jd,
+                companyName: company,
+                matchedKeywords: analysis.matchedKeywords,
+                missingKeywords: analysis.missingKeywords,
+                matchedPhrases: analysis.matchedPhrases,
+                missingPhrases: analysis.missingPhrases,
+                score: analysis.score
             });
 
             results.push(savedAnalysis);

@@ -11,6 +11,11 @@ const analysisSchema = new mongoose.Schema({
         required : true
     },
 
+    companyName : {
+        type: String,
+        default: "Unknown"
+    },
+
     matchedKeywords: [String],
     missingKeywords: [String],
     matchedPhrases: [String],
