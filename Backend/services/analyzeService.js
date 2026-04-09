@@ -18,7 +18,7 @@ const skillPhrases = [
 const weights = {
     keywords : 2,
     phrase : 6,
-    missingPenalty : -2
+    missingPenalty : -1
 };
 
 // Making a clean text function

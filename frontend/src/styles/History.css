@@ -1,18 +1,19 @@
-/* PAGE */
-
 .history {
   min-height: 100vh;
-  padding: 40px;
-  background: linear-gradient(135deg, #0f172a, #020617);
-  color: white;
+  padding: 30px;
+  background: #f5f7fa;
+  color: #111827;
 }
 
 .history-title {
-  margin-bottom: 20px;
   font-size: 26px;
+  font-weight: 600;
+  color: #2f5d73;
+  display: inline-block;
+  margin-bottom: 20px;
 }
 
-/* GRID */
+/* list */
 
 .history-list {
   display: flex;
@@ -20,22 +21,21 @@
   gap: 12px;
 }
 
-/* CARD */
+/* card */
 
 .history-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   padding: 16px;
-  border-radius: 10px;
-  background: #111827;
-  border: 1px solid #374151;
-  transition: 0.2s;
+  transition: 0.15s ease;
 }
 
 .history-card:hover {
-  border-color: #6366f1;
-  transform: translateY(-2px);
+  background: #f9fafb;
 }
 
-/* TOP */
+/* top row */
 
 .history-top {
   display: flex;
@@ -45,17 +45,18 @@
 }
 
 .history-score {
-  background: #6366f1;
+  background: #2f5d73;
+  color: white;
   padding: 4px 10px;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
 }
 
-/* TEXT */
+/* text */
 
 .history-jd {
-  color: #9ca3af;
+  color: #4b5563;
   font-size: 14px;
   margin: 8px 0;
   line-height: 1.5;
@@ -63,19 +64,19 @@
 
 .history-date {
   font-size: 12px;
-  color: #6b7280;
+  color: #9ca3af;
 }
 
-/* BUTTON */
+/* delete */
 
 .history-delete {
   padding: 6px 12px;
   border-radius: 6px;
-  border: 1px solid #374151;
-  background: transparent;
-  color: white;
+  border: 1px solid #e5e7eb;
+  background: white;
+  color: #374151;
   cursor: pointer;
-  transition: 0.2s;
+  font-size: 13px;
 }
 
 .history-delete:hover {

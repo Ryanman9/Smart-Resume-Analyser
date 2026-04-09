@@ -101,9 +101,11 @@ function Result() {
         <div className="result-card" key={index}>
           <h3>{item.companyName}</h3>
 
-          <p className="score">Score: {item.score}%</p>
-          <p className="match">Match Level: {item.matchLevel}</p>
-          <p>Rank: {item.rank}</p>
+          <div className="result-meta">
+            <span className="score">Score: {item.score}%</span>
+            <span className="match">Match: {item.matchLevel}</span>
+            <span className="rank">Rank: {item.rank}</span>
+          </div>
 
           {/* Matched Keywords */}
           <div className="keyword-block">
