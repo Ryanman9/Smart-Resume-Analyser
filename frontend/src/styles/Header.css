@@ -1,29 +1,44 @@
 .header {
-  height: 64px;
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
-  display: flex;
-  align-items: center;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.header-inner {
+  height: 60px;
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 0 30px;
+  padding: 0 20px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-.logo-img {
-  height: 36px;
-  width: 36px;
+.header-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.header-logo {
+  height: 32px;
+  width: 32px;
   object-fit: contain;
 }
 
-.project-name {
-  font-size: 18px;
+.header-title {
+  font-size: 16px;
   font-weight: 600;
-  color: #2f5d73;
+}
+
+.logout-btn {
+  padding: 6px 12px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.menu-btn {
+  font-size: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-right: 10px;
 }

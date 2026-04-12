@@ -1,12 +1,16 @@
 import "../styles/Header.css";
 import logo from "../assets/Logo.png";
 
-function Header() {
+function Header({ toggleSidebar }) {
   return (
     <div className="header">
-      <div className="header-inner">
-        <img src={logo} alt="logo" className="logo-img" />
-        <h1 className="project-name">Smart Resume Analyzer</h1>
+      <button className="menu-btn" onClick={toggleSidebar}>
+        ☰
+      </button>
+
+      <div className="header-title-wrap">
+        <span className="header-title">Smart Resume Analyzer</span>
+        <img src={logo} alt="logo" className="header-logo" />
       </div>
     </div>
   );

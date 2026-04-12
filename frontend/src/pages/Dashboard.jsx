@@ -33,6 +33,13 @@ function Dashboard() {
         }
     };
 
+    const avg =
+        topScores.length > 0
+        ? Math.round(
+        topScores.reduce((a, b) => a + b.score, 0) / topScores.length
+        )
+        : 0;
+
     if (loading) return <h2>Loading Dashboard...</h2>;
 
     return (
@@ -74,6 +81,11 @@ function Dashboard() {
                 <h3>Total Companies</h3>
                 <h2>{topScores.length}</h2>
             </div>
+            </div>
+
+            <div className="stat avg">
+                <h3>Average Score</h3>
+                <h2>{avg}%</h2>
             </div>
 
             {/* top scores */}
