@@ -2,9 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/Login.css";
+import { API_BASE } from "../config/api";
 
 function Login() {
-  const API = import.meta.env.VITE_API_URL;
+  const API = API_BASE;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

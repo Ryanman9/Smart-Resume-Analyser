@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Upload.css";
+import { API_BASE } from "../config/api";
 
 function Upload() {
     const navigate = useNavigate();
-    const API = import.meta.env.VITE_API_URL;
+    const API = API_BASE;
 
     const [resume, setResume] = useState(null);
     const [fileName, setFileName] = useState("No file selected");

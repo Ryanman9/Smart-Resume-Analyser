@@ -1,13 +1,19 @@
 const multer = require("multer");
 const pdfParse = require("pdf-parse");
 const fs = require("fs");
+const path = require("path");
 const analyzeResume = require("../services/analyzeService");
 const Analysis = require("../models/Analysis");
+
+const uploadDir = path.join(__dirname, "..", "uploads");
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 // Storage config
 const storage = multer.diskStorage({
     destination: function(req, file, cb){
-        cb(null, "uploads/");
+        cb(null, uploadDir);
     },
     filename: function(req, file, cb){
         cb(null, Date.now() + "-" + file.originalname);
@@ -30,6 +36,7 @@ const uploadFile = async(req, res) =>{
 
         // Extract text
         const data = await pdfParse(dataBuffer);
+        fs.unlink(filePath, () => {});
 
         let jobDescriptions = req.body.jobDescriptions;
 

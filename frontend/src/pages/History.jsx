@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/History.css";
+import { API_BASE } from "../config/api";
 
 function History() {
-  const API = import.meta.env.VITE_API_URL;
+  const API = API_BASE;
   const navigate = useNavigate();
 
   const [history, setHistory] = useState([]);

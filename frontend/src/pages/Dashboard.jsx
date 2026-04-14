@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Dashboard.css";
+import { API_BASE } from "../config/api";
 
 function Dashboard() {
     const navigate = useNavigate();
-    const API = import.meta.env.VITE_API_URL;
+    const API = API_BASE;
 
     const [topScores, setTopScores] = useState([]);
     const [total, setTotal] = useState(0);

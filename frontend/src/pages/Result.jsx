@@ -1,11 +1,12 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import "../styles/Result.css";
+import { API_BASE } from "../config/api";
 
 function Result() {
   const location = useLocation();
   const navigate = useNavigate();
-  const API = import.meta.env.VITE_API_URL;
+  const API = API_BASE;
 
   const query = new URLSearchParams(location.search);
   const isTop = query.get("filter") === "top";

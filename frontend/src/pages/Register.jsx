@@ -2,9 +2,10 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../styles/Register.css";
+import { API_BASE } from "../config/api";
 
 function Register() {
-  const API = import.meta.env.VITE_API_URL;
+  const API = API_BASE;
 
   const [name, setName] = useState("");   // ← ADD
   const [email, setEmail] = useState("");
