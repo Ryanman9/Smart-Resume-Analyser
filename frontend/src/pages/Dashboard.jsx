@@ -12,10 +12,30 @@ function Dashboard() {
 
     const fetchDashboard = useCallback(async () => {
         try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                navigate("/");
+                return;
+            }
+
             const [topRes, historyRes] = await Promise.all([
-                fetch(`${API}/api/analysis/top`),
-                fetch(`${API}/api/analysis`)
+                fetch(`${API}/api/analysis/top`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }),
+                fetch(`${API}/api/analysis`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
             ]);
+
+            if (topRes.status === 401 || historyRes.status === 401) {
+                localStorage.removeItem("token");
+                navigate("/");
+                return;
+            }
 
             const topData = await topRes.json();
             const historyData = await historyRes.json();

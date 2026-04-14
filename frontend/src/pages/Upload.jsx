@@ -31,6 +31,11 @@ function Upload() {
             alert("Please upload resume");
             return;
         }
+        const token = localStorage.getItem("token");
+        if (!token) {
+            navigate("/");
+            return;
+        }
 
         const formData = new FormData();
         formData.append("resume", resume);
@@ -39,8 +44,17 @@ function Upload() {
         try {
             const response = await fetch(`${API}/api/upload`, {
                 method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
                 body: formData,
             });
+
+            if (response.status === 401) {
+                localStorage.removeItem("token");
+                navigate("/");
+                return;
+            }
 
             const data = await response.json();
             navigate("/result", { state: data });

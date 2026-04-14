@@ -1,9 +1,10 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import "../styles/Result.css";
 
 function Result() {
   const location = useLocation();
+  const navigate = useNavigate();
   const API = import.meta.env.VITE_API_URL;
 
   const query = new URLSearchParams(location.search);
@@ -14,19 +15,33 @@ function Result() {
   const data = location.state;
 
   const fetchTop = useCallback(async () => {
-    setLoading(true);
     try {
-      const res = await fetch(`${API}/api/analysis/top`);
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/");
+        return;
+      }
+
+      const res = await fetch(`${API}/api/analysis/top`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/");
+        return;
+      }
       const data = await res.json();
       setTopResults(data);
     } catch (err) {
       console.error(err);
     }
-    }, [API]);
+    }, [API, navigate]);
 
     useEffect(() => {
       if (isTop) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchTop();
       }
     }, [isTop, fetchTop]);

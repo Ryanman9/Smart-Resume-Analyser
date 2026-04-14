@@ -19,6 +19,10 @@ const upload = multer({storage: storage});
 
 const uploadFile = async(req, res) =>{
     try{
+        if (!req.file) {
+            return res.status(400).json({ message: "Resume file is required" });
+        }
+
         const filePath = req.file.path;
 
         // Read File
@@ -36,7 +40,11 @@ const uploadFile = async(req, res) =>{
 
         // if string -> parse
         if (typeof jobDescriptions === "string") {
-            jobDescriptions = JSON.parse(jobDescriptions);
+            try {
+                jobDescriptions = JSON.parse(jobDescriptions);
+            } catch {
+                return res.status(400).json({ message: "Invalid jobDescriptions format" });
+            }
         }
 
         // if single value -> convert to array
@@ -68,6 +76,7 @@ const uploadFile = async(req, res) =>{
             const analysis = analyzeResume(data.text, cleanJD);
 
             const savedAnalysis = await Analysis.create({
+                userId: req.user.id,
                 resumeText: data.text,
                 jobDescription: jd,
                 companyName: company,
@@ -131,7 +140,7 @@ const uploadFile = async(req, res) =>{
 
 const getAnalysisHistory = async (req, res) => {
     try{
-        const history = await Analysis.find().sort({ createdAt : -1});
+        const history = await Analysis.find({ userId: req.user.id }).sort({ createdAt : -1});
         res.json(history);
     }
     catch (error){
@@ -143,7 +152,7 @@ const getAnalysisHistory = async (req, res) => {
 const getAnalysisById = async (req, res) => {
     try{
         const {id} = req.params;
-        const analysis = await Analysis.findById(id);
+        const analysis = await Analysis.findOne({ _id: id, userId: req.user.id });
 
         if(!analysis){
             return res.status(400).json( {message : "Analysis not found"} );
@@ -161,7 +170,7 @@ const deleteAnalysis = async (req, res) => {
     try{
         const { id } = req.params;
 
-        const deleted = await Analysis.findByIdAndDelete(id);
+        const deleted = await Analysis.findOneAndDelete({ _id: id, userId: req.user.id });
 
         if(!deleted){
             return res.status(400).json({message : "Analysis not found"});
@@ -177,7 +186,7 @@ const deleteAnalysis = async (req, res) => {
 
 const getTopAnalyses = async (req, res) => {
     try{
-        const top = await Analysis.find().sort({score:-1}).limit(5);
+        const top = await Analysis.find({ userId: req.user.id }).sort({score:-1}).limit(5);
 
         res.json(top);
     }

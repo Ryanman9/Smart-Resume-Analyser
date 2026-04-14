@@ -1,16 +1,34 @@
-import { useState, useEffect } from "react";
-import { useCallback} from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/History.css";
 
 function History() {
   const API = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
 
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchHistory = useCallback(async () => {
     try{
-      const res = await fetch(`${API}/api/analysis`);
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/");
+        return;
+      }
+
+      const res = await fetch(`${API}/api/analysis`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/");
+        return;
+      }
+
       const data = await res.json();
 
       console.log("history:", data);
@@ -22,12 +40,21 @@ function History() {
     finally{
       setLoading(false);
     }
-  }, [API]);
+  }, [API, navigate]);
 
   const deleteItem = async (id) => {
     try{
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/");
+        return;
+      }
+
       await fetch(`${API}/api/analysis/${id}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       fetchHistory();

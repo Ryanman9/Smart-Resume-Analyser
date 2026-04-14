@@ -6,6 +6,7 @@ import Result from "./pages/Result";
 import History from "./pages/History";
 import Register from "./pages/Register";
 import Layout from "./components/Layout";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App(){
   return (
@@ -13,7 +14,13 @@ function App(){
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route element={<Layout />}>
+        <Route
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/upload" element={<Upload />} />
           <Route path="/result" element={<Result />} />
