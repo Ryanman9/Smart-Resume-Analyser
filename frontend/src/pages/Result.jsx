@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "../styles/Result.css";
 
 function Result() {
@@ -10,17 +10,10 @@ function Result() {
   const isTop = query.get("filter") === "top";
 
   const [topResults, setTopResults] = useState([]);
-  const [loading, setLoading] = useState(false);
 
   const data = location.state;
 
-  useEffect(() => {
-    if (isTop) {
-      fetchTop();
-    }
-  }, [isTop]);
-
-  const fetchTop = async () => {
+  const fetchTop = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch(`${API}/api/analysis/top`);
@@ -29,8 +22,14 @@ function Result() {
     } catch (err) {
       console.error(err);
     }
-    setLoading(false);
-  };
+    }, [API]);
+
+    useEffect(() => {
+      if (isTop) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        fetchTop();
+      }
+    }, [isTop, fetchTop]);
 
   /* ================= TOP MODE ================= */
 
@@ -38,8 +37,6 @@ function Result() {
     return (
       <div className="result-page">
         <h1 className="result-title">Top Resume Matches</h1>
-
-        {loading && <p>Loading...</p>}
 
         {topResults.map((item, index) => (
           <div className="top-card" key={item._id}>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useCallback} from "react";
 import "../styles/History.css";
 
 function History() {
@@ -7,7 +8,7 @@ function History() {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchHistory = async () => {
+  const fetchHistory = useCallback(async () => {
     try{
       const res = await fetch(`${API}/api/analysis`);
       const data = await res.json();
@@ -21,7 +22,7 @@ function History() {
     finally{
       setLoading(false);
     }
-  };
+  }, [API]);
 
   const deleteItem = async (id) => {
     try{
@@ -38,7 +39,7 @@ function History() {
 
   useEffect(() => {
     fetchHistory();
-  }, []);
+  }, [fetchHistory]);
 
   if (loading) return <h2>Loading history...</h2>;
 

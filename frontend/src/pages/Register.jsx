@@ -31,7 +31,7 @@ function Register() {
       });
 
       navigate("/");
-    } catch (err) {
+    } catch {
       setError("Registration failed");
     } finally {
       setLoading(false);

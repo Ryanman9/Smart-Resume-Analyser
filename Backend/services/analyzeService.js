@@ -124,7 +124,7 @@ const analyzeResume = (resumeText, jobDescription) => {
         missingKeywords,
         matchedPhrases,
         missingPhrases,
-        score: finalScore.toFixed(2)
+        score: Number(finalScore.toFixed(2))
     };
 };
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Dashboard.css";
 
@@ -10,11 +10,7 @@ function Dashboard() {
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetchDashboard();
-    }, []);
-
-    const fetchDashboard = async () => {
+    const fetchDashboard = useCallback(async () => {
         try {
             const [topRes, historyRes] = await Promise.all([
                 fetch(`${API}/api/analysis/top`),
@@ -31,7 +27,11 @@ function Dashboard() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [API]);
+
+    useEffect(() => {
+        fetchDashboard();
+    }, [fetchDashboard]);
 
     const avg =
         topScores.length > 0

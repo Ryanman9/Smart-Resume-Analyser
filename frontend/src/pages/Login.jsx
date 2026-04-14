@@ -31,7 +31,7 @@ function Login() {
       localStorage.setItem("token", res.data.token);
       navigate("/dashboard");
 
-    } catch (err) {
+    } catch {
       setError("Invalid email or password");
     } finally {
       setLoading(false);
@@ -41,30 +41,6 @@ function Login() {
   const handleKeyDown = (e) => {
     if (e.key === "Enter") handleLogin();
   };
-
-  const handleRegister = async () => {
-    if (!email || !password) {
-        setError("Please fill in all fields.");
-        return;
-    }
-
-    setLoading(true);
-    setError("");
-
-    try {
-        await axios.post(`${API}/api/auth/register`, {
-        email,
-        password,
-        });
-
-        setError("Registered successfully. You can now login.");
-
-    } catch (err) {
-        setError("User already exists");
-    } finally {
-        setLoading(false);
-    }
-    };
 
   return (
     <div className="login-page">
