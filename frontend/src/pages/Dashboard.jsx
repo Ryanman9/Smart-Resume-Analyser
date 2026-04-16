@@ -48,7 +48,7 @@ function Dashboard() {
         } finally {
             setLoading(false);
         }
-    }, [API]);
+    }, [API, navigate]);
 
     useEffect(() => {
         fetchDashboard();

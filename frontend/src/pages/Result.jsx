@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "../styles/Result.css";
 import { API_BASE } from "../config/api";
 
@@ -15,37 +15,46 @@ function Result() {
 
   const data = location.state;
 
-  const fetchTop = useCallback(async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/");
-        return;
-      }
+  useEffect(() => {
+    if (!isTop) return;
 
-      const res = await fetch(`${API}/api/analysis/top`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    let cancelled = false;
 
-      if (res.status === 401) {
-        localStorage.removeItem("token");
-        navigate("/");
-        return;
-      }
-      const data = await res.json();
-      setTopResults(data);
-    } catch (err) {
-      console.error(err);
-    }
-    }, [API, navigate]);
+    const fetchTopResults = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          navigate("/");
+          return;
+        }
 
-    useEffect(() => {
-      if (isTop) {
-        fetchTop();
+        const res = await fetch(`${API}/api/analysis/top`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (res.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/");
+          return;
+        }
+        const data = await res.json();
+
+        if (!cancelled) {
+          setTopResults(data);
+        }
+      } catch (err) {
+        console.error(err);
       }
-    }, [isTop, fetchTop]);
+    };
+    fetchTopResults();
+      
+
+      return () => {
+      cancelled = true;
+    };
+  }, [API, isTop, navigate]);
 
   /* ================= TOP MODE ================= */
 
@@ -61,7 +70,7 @@ function Result() {
             <p className="score">Score: {item.score}%</p>
 
             <p>
-              {item.jobDescription.substring(0, 150)}...
+              {(item.jobDescription || "").substring(0, 150)}...
             </p>
           </div>
         ))}
