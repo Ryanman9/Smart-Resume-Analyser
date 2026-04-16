@@ -27,8 +27,25 @@ function ProtectedRoute({ children }) {
           return;
         }
 
+        const contentType = response.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) {
+          localStorage.removeItem("token");
+          setIsAuthenticated(false);
+          return;
+        }
+
+        const data = await response.json();
+        const isValidToken = data?.valid === true;
+
+        if (!isValidToken) {
+          localStorage.removeItem("token");
+          setIsAuthenticated(false);
+          return;
+        }
+
         setIsAuthenticated(true);
       } catch {
+        localStorage.removeItem("token");
         setIsAuthenticated(false);
       }
     };
